@@ -55,7 +55,7 @@
         return;
       }
 
-      const localCallback = `https://127.0.0.1:5051/auth/callback?${forwarded.toString()}`;
+      const localCallback = `http://127.0.0.1:5051/auth/callback?${forwarded.toString()}`;
       const fallback = document.createElement("a");
       fallback.href = localCallback;
       fallback.textContent = "Clique aqui se o programa nao abrir automaticamente.";
