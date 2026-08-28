@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <title>Conectando ao Mercado Livre</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      color: #222;
+      background: #f5f5f5;
+    }
+    main {
+      width: min(520px, 100%);
+      padding: 24px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+    }
+    h1 { margin: 0 0 12px; font-size: 22px; }
+    p { margin: 0; line-height: 1.5; }
+    a { color: #1769aa; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Conectando ao programa</h1>
+    <p id="message">Aguarde enquanto a autorizacao retorna ao aplicativo local.</p>
+  </main>
+  <script>
+    (() => {
+      const received = new URLSearchParams(window.location.search);
+      const forwarded = new URLSearchParams();
+      const allowed = ["code", "state", "error", "error_description"];
+
+      for (const name of allowed) {
+        if (received.has(name)) forwarded.set(name, received.get(name));
+      }
+
+      const hasResult = forwarded.has("code") || forwarded.has("error");
+      const hasState = forwarded.has("state");
+      const message = document.getElementById("message");
+
+      if (!hasResult || !hasState) {
+        message.textContent = "Retorno OAuth incompleto. Volte ao programa e inicie o login novamente.";
+        return;
+      }
+
+      const localCallback = `https://127.0.0.1:5051/auth/callback?${forwarded.toString()}`;
+      const fallback = document.createElement("a");
+      fallback.href = localCallback;
+      fallback.textContent = "Clique aqui se o programa nao abrir automaticamente.";
+      message.replaceChildren(fallback);
+      window.location.replace(localCallback);
+    })();
+  </script>
+</body>
+</html>
